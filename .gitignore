@@ -1,0 +1,137 @@
+# .gitignore para Web API en .NET 10
+# Ignora archivos generados, secretos locales y artefactos de build
+
+# --------------------
+# Sistema y editores
+# --------------------
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# JetBrains Rider / IntelliJ
+.idea/
+*.sln.iml
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# ReSharper
+_ReSharper*/
+*.DotSettings.user
+
+# --------------------
+# .NET / Visual Studio build
+# --------------------
+bin/
+obj/
+artifacts/
+TestResults/
+*.nupkg
+*.snupkg
+*.vsix
+
+# Publish artifacts
+publish/
+**/publish/
+*.appx
+*.appxbundle
+
+# Runtime files
+*.dll
+*.exe
+*.pdb
+*.cache
+
+# NuGet
+*.nupkg
+packages/
+.nuget/packages/
+.nuget/plugins-cache/
+
+# User-specific files (contienen configuraciones o secretos locales)
+appsettings.*.json
+appsettings.*.Development.json
+secrets.json
+.env
+.env.*
+*.Local.*
+
+# Nota: no ignores los lockfiles (package-lock.json / yarn.lock) si quieres reproducibilidad
+
+# --------------------
+# Node / Frontend (si aplica)
+# --------------------
+node_modules/
+npm-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+# build/output
+dist/
+build/
+.next/
+.out/
+coverage/
+coverage-final.json
+
+# npm credentials
+.npmrc
+
+# --------------------
+# Tests / Coverage
+# --------------------
+coverage/
+coverage-reports/
+*.lcov
+coverage-final.json
+*.trx
+
+# --------------------
+# Docker / Compose
+# --------------------
+docker-compose.override.yml
+.env.docker
+
+# --------------------
+# Database files / local DB
+# --------------------
+*.db
+*.sqlite
+*.mdf
+*.ldf
+LocalDB.*
+
+# --------------------
+# Logs
+# --------------------
+*.log
+logs/
+
+# --------------------
+# CI / tooling
+# --------------------
+.vscode-test/
+.cache/
+.terraform/
+terraform.tfstate*
+
+# --------------------
+# Misc
+# --------------------
+*.zip
+*.tar.gz
+*.7z
+*.bak
+*.orig
+
+# Keep project-level tooling manifests tracked (do not ignore):
+# - global.json (SDK version pin)
+# - Directory.Build.props / Directory.Build.targets
+# - dotnet-tools.json (si forma parte del flujo de trabajo)
+
+# Fin del .gitignore
