@@ -1,7 +1,12 @@
+using Ecommerce_Api.Data;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
 // Crear y configurar el builder de la aplicación (captura args de línea de comandos)
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("ConectionSql")));
 
 // Añadir servicios al contenedor de inyección de dependencias
 builder.Services.AddControllers();            // Soporte para controladores API (MVC)
