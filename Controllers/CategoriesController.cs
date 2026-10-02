@@ -1,4 +1,5 @@
 using AutoMapper;
+using Ecommerce_Api.Models;
 using Ecommerce_Api.Models.Dtos;
 using Ecommerce_Api.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
@@ -35,10 +36,89 @@ public class CategoriesController: ControllerBase
     }
 
     [HttpGet("{id:int}", Name = "GetCategory")]
-    [ProdcesResponseType(StatusCode.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public IActionResult GetCategoryById(int id)
     {
+        var category = _categoryRepository.GetCategory(id);
+        if (category == null) return NotFound($"Category with ID: {id} not found");
+        var categoryDto = _mapper.Map<CategoryDto>(category);
+        return Ok(categoryDto);
+    }
+    
+    [HttpPost()]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult CreateCategory([FromBody] CreateCategoryDto createCategoryDto)
+    {
+        if (createCategoryDto == null) return BadRequest(ModelState);
+        if (_categoryRepository.CategoryExists(createCategoryDto.Name))
+        {
+            ModelState.AddModelError("CustomError", "Category already exists");
+            return BadRequest(ModelState);
+        }
+
+        var category = _mapper.Map<Category>(createCategoryDto);
+        if (!_categoryRepository.CreateCategory(category))
+        {
+            ModelState.AddModelError("CustomError", $"Something went wrong when saving the record {category.Name}");
+            return StatusCode(500, ModelState);
+        }
+
+        return CreatedAtRoute("GetCategory", new { id = category.Id }, category);
+    }
+    
+    [HttpPatch("{id:int}", Name="UpdateCategory")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult UpdateCategory(int id, [FromBody] CreateCategoryDto? updateCategoryDto)
+    {
+        if (!_categoryRepository.CategoryExists(id)) return BadRequest($"Category with ID: {id} not found");
+        if (updateCategoryDto == null) return BadRequest(ModelState);
+        if (_categoryRepository.CategoryExists(updateCategoryDto.Name))
+        {
+            ModelState.AddModelError("CustomError", "Category already exists");
+            return BadRequest(ModelState);
+        }
+
+        var category = _mapper.Map<Category>(updateCategoryDto);
+        category.Id = id;
+        if (!_categoryRepository.UpdateCategory(category))
+        {
+            ModelState.AddModelError("CustomError", $"Something went wrong when updating the record {category.Name}");
+            return StatusCode(500, ModelState);
+        }
+
+        return NoContent();
+    }
+    
+    [HttpDelete("{id:int}", Name="DeleteCategory")]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    public IActionResult DeleteCategory(int id)
+    {
+        if (!_categoryRepository.CategoryExists(id)) return BadRequest($"Category with ID: {id} not found");
         
+        var category = _categoryRepository.GetCategory(id);
+        if (category == null) return BadRequest($"Category with ID: {id} not found");
+
+        if (!_categoryRepository.DeleteCategory(category))
+        {
+            ModelState.AddModelError("CustomError", "Something went wrong when deleting the record");
+            return StatusCode(500, ModelState);
+        }
+
+        return NoContent();
     }
 }
