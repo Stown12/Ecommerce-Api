@@ -1,4 +1,6 @@
 using Ecommerce_Api.Data;
+using Ecommerce_Api.Repository;
+using Ecommerce_Api.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 
@@ -7,6 +9,15 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConectionSql")));
+
+builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+// Registra AutoMapper en el contenedor de inyección de dependencias
+// AddAutoMapper = agrega AutoMapper como servicio
+// cfg.AddMaps(...) = escanea el ensamblado actual en busca de perfiles de m
+builder.Services.AddAutoMapper(cfg => 
+{
+    cfg.AddMaps(typeof(Program).Assembly);
+});
 
 // Añadir servicios al contenedor de inyección de dependencias
 builder.Services.AddControllers();            // Soporte para controladores API (MVC)
