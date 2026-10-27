@@ -11,6 +11,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConectionSql")));
 
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 // Registra AutoMapper en el contenedor de inyección de dependencias
 // AddAutoMapper = agrega AutoMapper como servicio
 // cfg.AddMaps(...) = escanea el ensamblado actual en busca de perfiles de m

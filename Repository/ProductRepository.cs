@@ -1,6 +1,7 @@
 using Ecommerce_Api.Data;
 using Ecommerce_Api.Models;
 using Ecommerce_Api.Repository.IRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ecommerce_Api.Repository;
 
@@ -16,22 +17,26 @@ public class ProductRepository: IProductRepository
     
     public ICollection<Product> GetProducts()
     {
-        return _db.Products.OrderBy(p => p.Name).ToList();
+        return _db.Products.Include(p => p.Category).OrderBy(p => p.Name).ToList();
     }
 
     public ICollection<Product> GetProductsForCategory(int categoryId)
     {
         if (categoryId <= 0) return new List<Product>();
         
-        return _db.Products.Where(p => p.CategoryId == categoryId).OrderBy(p => p.Name).ToList();
+        return _db.Products.Include(p => p.Category).Where(p => p.CategoryId == categoryId).OrderBy(p => p.Name).ToList();
     }
 
-    public ICollection<Product> SearchProducts(string name)
+    public ICollection<Product> SearchProducts(string searchTerm)
     {
         IQueryable<Product> query = _db.Products;
-        if (!string.IsNullOrEmpty(name))
+        var searchTermLower = searchTerm.ToLower().Trim();
+        if (!string.IsNullOrEmpty(searchTerm))
         {
-            query = query.Where(p => p.Name.ToLower().Trim() == name.ToLower().Trim());
+            query = query.Include(p => p.Category )
+                .Where(p => p.Name.ToLower().Trim().Contains(searchTermLower) ||
+                    p.Name.ToLower().Trim().Contains(searchTermLower));
+
         }
         return query.OrderBy(p => p.Name).ToList();
     }
@@ -40,7 +45,7 @@ public class ProductRepository: IProductRepository
     {
         if(id <= 0) return null;
 
-        return _db.Products.FirstOrDefault(product => product.ProductId == id);
+        return _db.Products.Include(p => p.Category).FirstOrDefault(product => product.ProductId == id);
     }
 
     public bool BuyProduct(string name, int quantity)
