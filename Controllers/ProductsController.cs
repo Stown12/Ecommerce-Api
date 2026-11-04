@@ -21,7 +21,7 @@ public class ProductsController : ControllerBase
         _productRepository = productRepository;
         _categoryRepository = categoryRepository;
         _mapper = mapper;
-    }
+    }   
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
