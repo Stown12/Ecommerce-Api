@@ -1,3 +1,4 @@
+using Ecommerce_Api.Constants;
 using Ecommerce_Api.Data;
 using Ecommerce_Api.Repository;
 using Ecommerce_Api.Repository.IRepository;
@@ -27,6 +28,17 @@ builder.Services.AddControllers();            // Soporte para controladores API 
 // Servicios para OpenAPI/Swagger (documentación y UI)
 builder.Services.AddOpenApi();
 
+//Configuracion de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(PolicyNames.AllowSpecificOrigin, builder =>
+    {
+        builder.WithOrigins("*")
+            .AllowAnyMethod()
+            .AllowAnyHeader();
+    });
+});
+
 // Construir la aplicación a partir del builder configurado
 var app = builder.Build();
 
@@ -38,6 +50,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection(); // Redirige solicitudes HTTP a HTTPS
+
+app.UseCors(PolicyNames.AllowSpecificOrigin); // Habilita CORS con la política definida
 
 app.UseAuthorization();    // Habilita middleware de autorización (políticas/atributos)
 
